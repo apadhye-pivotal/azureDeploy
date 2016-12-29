@@ -4,7 +4,7 @@
   "parameters": {
     "clusterName": {
       "type": "string",
-      "defaultValue": "vgpdb",
+      "defaultValue": "vgeode",
       "metadata": {
         "description": "Cluster name"
       }
@@ -17,14 +17,13 @@
       },
       "allowedValues": [
         "6.6",
-        "6.7",
-        "7.1",
-        "northeurope"
+        "6.8",
+        "7.1"
       ] 
     },
     "adminUserName": {
       "type": "string",
-      "defaultValue": "gpadmin",
+      "defaultValue": "gfadmin",
       "metadata": {
         "description": "Admin user name for the VMs"
       }
@@ -51,19 +50,6 @@
       "type": "string",
       "metadata": {
         "description": "API token for staging binary tarball."
-      }
-    },
-    "gpccUsername": {
-      "type": "string",
-      "defaultValue": "gpadmin",
-      "metadata": {
-        "description": "Username for the GPCC"
-      }
-    },
-    "gpccPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "password for the GPCC"
       }
     },
     "storageAccountPrefix": {
@@ -114,14 +100,14 @@
     },
     "virtualNetworkName": {
       "type": "string",
-      "defaultValue": "gpdbvnet",
+      "defaultValue": "geodevnet",
       "metadata": {
         "description": "The name of the virtual network provisioned for the deployment"
       }
     },
     "subnetName": {
       "type": "string",
-      "defaultValue": "gpdbsubnet",
+      "defaultValue": "geodesubnet",
       "metadata": {
         "description": "Subnet name for the virtual network where resources will be provisioned"
       }
@@ -147,21 +133,21 @@
         "description": "Prefix for all VM IP addresses (NOT a CIDR)"
       }
     },
-    "masterNodeAddressStart": {
+    "locatorNodeAddressStart": {
       "type": "int",
       "defaultValue": 10,
       "metadata": {
-        "description": "IP suffix for first master node"
+        "description": "IP suffix for first locator node"
       }
     },
-    "segmentNodeAddressStart": {
+    "serverNodeAddressStart": {
       "type": "int",
       "defaultValue": 20,
       "metadata": {
         "description": "IP suffix for first data node"
       }
     },
-    "numberOfMasterNodes": {
+    "numberOfLocatorNodes": {
       "type": "int",
       "defaultValue": 1,
       "allowedValues": [
@@ -169,14 +155,14 @@
         2
       ],
       "metadata": {
-        "description": "Number of master nodes (defaults to 1)"
+        "description": "Number of locator nodes (defaults to 1)"
       }
     },
-    "numberOfSegmentNodes": {
+    "numberOfServerNodes": {
       "type": "int",
       "defaultValue": 3,
       "metadata": {
-        "description": "Number of segment nodes (defaults to 3)"
+        "description": "Number of server nodes (defaults to 3)"
       }
     },
     "artifactsBaseUrl": {
@@ -186,9 +172,9 @@
         "description": "Base URL for scripts/manifests"
       }
     },
-    "masterVmSize": {
+    "locatorVmSize": {
       "type": "string",
-      "defaultValue": "Standard_A11",
+      "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
         "Standard_A1",
         "Standard_A2",
@@ -201,6 +187,7 @@
         "Standard_DS12",
         "Standard_DS13",
         "Standard_DS14",
+	"Standard_DS1_v2",
         "Standard_DS12_v2",
         "Standard_DS13_v2",
         "Standard_DS14_v2",
@@ -212,12 +199,12 @@
         "Standard_G4"
       ],
       "metadata": {
-        "description": "The master node instance type (defaults to Standard_DS14)"
+        "description": "The locator node instance type (defaults to Standard_DS14)"
       }
     },
-    "segmentVmSize": {
+    "serverVmSize": {
       "type": "string",
-      "defaultValue": "Standard_A11",
+      "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
         "Standard_A1",
         "Standard_A2",
@@ -230,6 +217,7 @@
         "Standard_DS12",
         "Standard_DS13",
         "Standard_DS14",
+	"Standard_DS1_v2",
         "Standard_DS12_v2",
         "Standard_DS13_v2",
         "Standard_DS14_v2",
@@ -242,22 +230,17 @@
         "Standard_G4"
       ],
       "metadata": {
-        "description": "The segment node instance type (defaults to Standard_DS14)"
+        "description": "The server node instance type (defaults to Standard_DS14)"
       }
     },
-    "masterNodeDisk" : {
+    "locatorNodeDisk" : {
       "type": "string",
       "defaultValue": "100"
-    },
-    "segmentNodeDisk" : {
-      "type": "string",
-      "defaultValue": "20"
     }
   },
   "variables": {
     "templateAPIVersion":"2015-11-01",
     "resourceAPIVersion":"2015-06-15",
-    "installGPCC":"True",
     "addressPrefix":"[parameters('addressPrefix')]",
     "subnetPrefix":"[parameters('subnetPrefix')]",
     "nodeAddressPrefix":"[parameters('nodeAddressPrefix')]",
@@ -269,42 +252,42 @@
     },
     "clusterSpec": { 
       "clusterName": "[parameters('clusterName')]",
-      "masterNodes": "[parameters('numberOfMasterNodes')]",
-      "segmentNodes": "[parameters('numberOfSegmentNodes')]"
+      "locatorNodes": "[parameters('numberOfLocatorNodes')]",
+      "serverNodes": "[parameters('numberOfServerNodes')]"
     },
-    "masterSpec": {
+    "locatorSpec": {
       "imagePublisher": "OpenLogic",
       "imageVersion": "latest",
       "imageSKU": "[parameters('centosRelease')]",
       "imageOffer": "CentOS",
-      "vmSize": "[parameters('masterVmSize')]",
+      "vmSize": "[parameters('locatorVmSize')]",
       "adminUserName": "[parameters('adminUserName')]",
       "adminPassword": "[parameters('adminPassword')]",
       "sshKeyData": "[parameters('sshKeyData')]" ,
       "sshPrivKeyData": "[parameters('sshPrivKeyData')]" ,
       "apiToken" : "[parameters('apiToken')]" ,
-      "masterNodeDataDiskGB": "[parameters('masterNodeDisk')]",
+      "locatorNodeDataDiskGB": "[parameters('locatorNodeDisk')]",
       "nodeASName": "[variables('nodeASName')]"
     },
-    "segmentSpec": {
+    "serverSpec": {
       "imagePublisher": "OpenLogic",
       "imageVersion": "latest",
       "imageSKU": "[parameters('centosRelease')]",
       "imageOffer": "CentOS",
-      "vmSize": "[parameters('segmentVmSize')]",
+      "vmSize": "[parameters('serverVmSize')]",
       "adminUserName": "[parameters('adminUserName')]",
       "adminPassword": "[parameters('adminPassword')]",
       "sshKeyData": "[parameters('sshKeyData')]" ,
       "apiToken" : "[parameters('apiToken')]" ,
-      "segmentNodeDataDiskGB": "[parameters('segmentNodeDisk')]",
+      "serverNodeDataDiskGB": "[parameters('serverNodeDisk')]",
       "nodeASName": "[variables('nodeASName')]"
     },
     "networkSpec": {
       "addressPrefix": "[variables('addressPrefix')]",
       "subnetPrefix": "[variables('subnetPrefix')]",
       "privateIPPrefix": "[variables('nodeAddressPrefix')]",
-      "masterNodeAddressStart": "[parameters('masterNodeAddressStart')]",
-      "segmentNodeAddressStart": "[parameters('segmentNodeAddressStart')]",
+      "locatorNodeAddressStart": "[parameters('locatorNodeAddressStart')]",
+      "serverNodeAddressStart": "[parameters('serverNodeAddressStart')]",
       "virtualNetworkName": "[parameters('virtualNetworkName')]",
       "virtualNetworkSubnetName": "[parameters('subnetName')]"
     }
@@ -337,7 +320,7 @@
       }
     },
     {
-      "name": "master-node",
+      "name": "locator-node",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "[variables('templateAPIVersion')]",
       "dependsOn": [
@@ -346,7 +329,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptsUri'), '/master-node.json?fileviewer=file-view-default')]",
+          "uri": "[concat(variables('scriptsUri'), '/locator-node.json?fileviewer=file-view-default')]",
           "contentVersion": "1.0.0.1"
         },
         "parameters": {
@@ -366,10 +349,10 @@
             "value": "[variables('storageAccount')]"
           },
           "vmCount": {
-            "value": "[variables('clusterSpec').masterNodes]"
+            "value": "[variables('clusterSpec').locatorNodes]"
           },
           "vmSpec": {
-            "value": "[variables('masterSpec')]"
+            "value": "[variables('locatorSpec')]"
           },
           "networkSpec": {
             "value": "[variables('networkSpec')]"
@@ -384,7 +367,7 @@
       }
     },
     {
-      "name": "segment-node",
+      "name": "server-node",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "[variables('templateAPIVersion')]",
       "dependsOn": [
@@ -393,7 +376,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('scriptsUri'), '/segment-node.json?fileviewer=file-view-default')]",
+          "uri": "[concat(variables('scriptsUri'), '/server-node.json?fileviewer=file-view-default')]",
           "contentVersion": "1.0.0.1"
         },
         "parameters": {
@@ -413,10 +396,10 @@
             "value": "[variables('storageAccount')]"
           },
           "vmCount": {
-            "value": "[variables('clusterSpec').segmentNodes]"
+            "value": "[variables('clusterSpec').serverNodes]"
           },
           "vmSpec": {
-            "value": "[variables('segmentSpec')]"
+            "value": "[variables('serverSpec')]"
           },
           "networkSpec": {
             "value": "[variables('networkSpec')]"

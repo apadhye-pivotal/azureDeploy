@@ -53,12 +53,12 @@
             }
           },
           {
-            "name": "GPCC.Web.UI",
+            "name": "PULSE.Web.UI",
             "properties": {
-              "description": "Allows GPCC.Web.UI traffic",
+              "description": "Allows PULSE.Web.UI traffic",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "28080",
+              "destinationPortRange": "7070",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -67,12 +67,12 @@
             }
           },
           {
-            "name": "GPDB.Master.Communication",
+            "name": "GEODE.Locator.Communication",
             "properties": {
-              "description": "Allows GPDB Master traffic",
+              "description": "Allows GEODE Locator traffic",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "5432",
+              "destinationPortRange": "10334",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",

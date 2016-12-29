@@ -93,8 +93,8 @@
       "name": "[concat(variables('vmName'), copyIndex(1), '-publicIP')]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "segmentNodeIpLoop",
-        "count": "[parameters('clusterSpec').segmentNodes]"
+        "name": "serverNodeIpLoop",
+        "count": "[parameters('clusterSpec').serverNodes]"
       },
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
@@ -113,8 +113,8 @@
         "[concat('Microsoft.Network/networkSecurityGroups/', variables('securityGroupName'))]"
       ],
       "copy": {
-        "name": "segmentNodeNicLoop",
-        "count": "[parameters('clusterSpec').segmentNodes]"
+        "name": "serverNodeNicLoop",
+        "count": "[parameters('clusterSpec').serverNodes]"
       },
       "properties": {
         "ipConfigurations": [
@@ -122,7 +122,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').segmentNodeAddressStart))]",
+              "privateIPAddress": "[concat(parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').serverNodeAddressStart))]",
               "subnet": {
                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('networkSpec').virtualNetworkName), '/subnets/', parameters('networkSpec').virtualNetworkSubnetName)]"
               },
@@ -143,12 +143,12 @@
       "name": "[concat(variables('vmName'), copyIndex(1))]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "segmentNodeLoop",
-        "count": "[parameters('clusterSpec').segmentNodes]"
+        "name": "serverNodeLoop",
+        "count": "[parameters('clusterSpec').serverNodes]"
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccount').prefix)]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('vmName'), copyIndex(1), '-nic0')]" 
+        "[concat('Microsoft.Network/networkInterfaces/', variables('vmName'), copyIndex(1), '-nic0')]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -177,116 +177,6 @@
             "sku": "[parameters('vmSpec').imageSKU]",
             "version": "[parameters('vmSpec').imageVersion]"
           },
-          "dataDisks": [
-            {
-              "name": "datadisk0",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 0,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk0.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk1",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 1,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk1.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk2",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 2,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk2.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk3",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 3,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk3.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk4",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 4,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk4.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk5",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 5,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk5.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk6",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 6,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk6.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk7",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 7,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk7.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk8",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 8,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk8.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk9",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 9,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk9.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk10",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 10,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk10.vhd')]"
-              },
-              "createOption": "Empty"
-            },
-            {
-              "name": "datadisk11",
-              "diskSizeGB": "[parameters('vmSpec').segmentNodeDataDiskGB]",
-              "lun": 11,
-              "vhd": {
-                "Uri": "[concat(variables('diskVhdBaseName'), copyIndex(1), 'datadisk11.vhd')]"
-              },
-              "createOption": "Empty"
-            }
-          ],
           "osDisk": {
             "name": "osdisk",
             "vhd": {
@@ -303,19 +193,19 @@
                 "primary": true
               },
               "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('vmName'), copyIndex(1), '-nic0'))]"
-            } 
+            }
           ]
         }
       }
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('vmName'), copyIndex(1), '/gpdbsegmentprep')]",
+      "name": "[concat(variables('vmName'), copyIndex(1), '/geodeserverprep')]",
       "apiVersion": "[parameters('resourceAPIVersion')]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "segmentNodePrepLoop",
-        "count": "[parameters('clusterSpec').segmentNodes]"
+        "name": "serverNodePrepLoop",
+        "count": "[parameters('clusterSpec').serverNodes]"
       },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'), copyIndex(1))]"
@@ -326,9 +216,9 @@
         "typeHandlerVersion": "1.4",
         "settings": {
             "fileUris": [
-                "[concat(parameters('scriptsUri'), '/ipoib/prep-host.sh')]"
+                "[concat(parameters('scriptsUri'), '/prep-host.sh')]"
             ],
-            "commandToExecute": "[concat('bash prep-host.sh ', parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').segmentNodeAddressStart),' ', variables('vmName'), copyIndex(1))]"
+            "commandToExecute": "[concat('bash prep-host.sh ', parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').serverNodeAddressStart),' ', variables('vmName'), copyIndex(1))]"
         }
       }
     }

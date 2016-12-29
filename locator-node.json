@@ -41,7 +41,7 @@
     "vmName": "mdw", 
     "sshKeyPath": "[concat('/home/',parameters('vmSpec').adminUsername,'/.ssh/authorized_keys')]",
     "publicIPAddressType": "Dynamic",
-    "securityGroupName": "[concat(parameters('networkSpec').virtualNetworkName, '-master-sg')]",
+    "securityGroupName": "[concat(parameters('networkSpec').virtualNetworkName, '-locator-sg')]",
     "storageAccount": "[parameters('storageAccount')]",
     "storageContainer": "[parameters('clusterSpec').clusterName]",
     "diskVhdBaseName": "[concat('http://',variables('storageAccount').prefix,'.blob.core.windows.net/',variables('storageContainer'),'/', parameters('clusterSpec').clusterName, '-')]"
@@ -69,12 +69,12 @@
             }
           },
           {
-            "name": "GPCC.Web.UI",
+            "name": "PULSE.Web.UI",
             "properties": {
-              "description": "Allows GPCC.Web.UI traffic",
+              "description": "Allows PULSE.Web.UI traffic",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "28080",
+              "destinationPortRange": "7070",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -83,12 +83,12 @@
             }
           },
           {
-            "name": "GPDB.Master.Communication",
+            "name": "GEODE.Locator.Communication",
             "properties": {
-              "description": "Allows GPDB Master traffic",
+              "description": "Allows GEODE Locator traffic",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "5432",
+              "destinationPortRange": "10334",
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
@@ -128,7 +128,7 @@
       "name": "[concat(parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'), '-publicIP')]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "masterNodeIpLoop",
+        "name": "locatorNodeIpLoop",
         "count": "[parameters('vmCount')]"
       },
       "properties": {
@@ -144,7 +144,7 @@
       "name": "[concat(parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'), '-nic0')]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "masterNodeNicLoop",
+        "name": "locatorNodeNicLoop",
         "count": "[parameters('vmCount')]"
       },
       "dependsOn": [
@@ -157,7 +157,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').masterNodeAddressStart))]",
+              "privateIPAddress": "[concat(parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').locatorNodeAddressStart))]",
               "subnet": {
                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('networkSpec').virtualNetworkName), '/subnets/', parameters('networkSpec').virtualNetworkSubnetName)]"
               },
@@ -178,8 +178,8 @@
       "name": "[concat(parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'))]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "masterNodeLoop",
-        "count": "[parameters('clusterSpec').masterNodes]"
+        "name": "locatorNodeLoop",
+        "count": "[parameters('clusterSpec').locatorNodes]"
       },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccount').prefix)]",
@@ -215,7 +215,7 @@
           "dataDisks": [
             {
               "name": "datadisk0",
-              "diskSizeGB": "[parameters('vmSpec').masterNodeDataDiskGB]",
+              "diskSizeGB": "[parameters('vmSpec').locatorNodeDataDiskGB]",
               "lun": 0,
               "vhd": {
                 "Uri": "[concat(variables('diskVhdBaseName'), parameters('role')[copyIndex()], variables('vmName'), '-datadisk0.vhd')]"
@@ -246,12 +246,12 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'), '/gpdbmasterprep')]",
+      "name": "[concat(parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'), '/geodelocatorprep')]",
       "apiVersion": "[parameters('resourceAPIVersion')]",
       "location": "[parameters('location')]",
       "copy": {
-        "name": "masterNodePrepLoop",
-        "count": "[parameters('clusterSpec').masterNodes]"
+        "name": "locatorNodePrepLoop",
+        "count": "[parameters('clusterSpec').locatorNodes]"
       },
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('clusterSpec').clusterName, '-', parameters('role')[copyIndex()], variables('vmName'))]"
@@ -264,7 +264,7 @@
             "fileUris": [
                 "[concat(parameters('scriptsUri'), '/prep-host.sh')]"
             ],
-            "commandToExecute": "[concat('bash prep-host.sh ', parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').masterNodeAddressStart), ' ', parameters('role')[copyIndex()], variables('vmName'), ' ', parameters('clusterSpec').segmentNodes, ' ', parameters('vmSpec').apiToken, ' \"', parameters('vmSpec').sshPrivKeyData, '\" ', parameters('networkSpec').privateIPPrefix, ' ', parameters('networkSpec').segmentNodeAddressStart )]"
+            "commandToExecute": "[concat('bash prep-host.sh ', parameters('networkSpec').privateIPPrefix, copyIndex(parameters('networkSpec').locatorNodeAddressStart), ' ', parameters('role')[copyIndex()], variables('vmName'), ' ', parameters('clusterSpec').serverNodes, ' ', parameters('vmSpec').apiToken, ' \"', parameters('vmSpec').sshPrivKeyData, '\" ', parameters('networkSpec').privateIPPrefix, ' ', parameters('networkSpec').serverNodeAddressStart )]"
         }
       }
     }

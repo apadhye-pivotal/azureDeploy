@@ -3,19 +3,19 @@
   "contentVersion": "1.0.0.1",
   "parameters": {
     "clusterName": {
-      "value": "vgpdbprod"
+      "value": "vgeodeprod"
     },
-    "masterVmSize": {
+    "locatorVmSize": {
       "value": "Standard_D14_v2"
     },
-    "segmentVmSize": {
+    "serverVmSize": {
       "value": "Standard_D13_v2"
     },
     "centosRelease": {
       "value": "6.7"
     },
     "storageAccountPrefix": {
-      "value": "plsdatalakegpdbeast"
+      "value": "plsdatalakegeodeeast"
     },
     "storageAccountType": {
       "value": "Premium_LRS"
@@ -32,23 +32,20 @@
     "adminPassword": {
       "value": ""
     },
-    "gpccPassword": {
-      "value": "GEN-PASSWORD"
-    },
-    "numberOfSegmentNodes": {
-      "value": 4
+    "numberOfServerNodes": {
+      "value": 3
     },
     "dnsNamePrefix": {
       "value": "east"
     },
     "virtualNetworkName": {
-      "value": "vgpdbprodvneteast"
+      "value": "vgeodeprodvneteast"
     },
     "location": {
       "value": "eastus"
     },
     "subnetName": {
-      "value": "vgpdbprodeast"
+      "value": "vgeodeprodeast"
     },
     "addressPrefix": {
       "value": "10.4.0.0/16" 
@@ -60,10 +57,7 @@
       "value": "10.4.0."
     },
     "artifactsBaseUrl": {
-      "value": "https://raw.githubusercontent.com/kdunn926/azureDeploy/master"
-    },
-    "segmentNodeDisk" : {
-      "value": "500"
+      "value": "https://raw.githubusercontent.com/apadhye-pivotal/azureDeploy/"
     }
   }
 }
