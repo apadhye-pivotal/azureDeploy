@@ -279,7 +279,6 @@
       "adminPassword": "[parameters('adminPassword')]",
       "sshKeyData": "[parameters('sshKeyData')]" ,
       "apiToken" : "[parameters('apiToken')]" ,
-      "serverNodeDataDiskGB": "[parameters('serverNodeDisk')]",
       "nodeASName": "[variables('nodeASName')]"
     },
     "networkSpec": {

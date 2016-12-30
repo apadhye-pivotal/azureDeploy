@@ -66,7 +66,7 @@ curl -o /home/gfadmin/pivotal-gemfire-9.0.1.zip -L -H "Authorization: Token ${AP
 chown gfadmin:gfadmin /home/gfadmin/pivotal-gemfire-9.0.1.zip
 
 tar xzf /home/gfadmin/jdk-8u72-linux-x64.tar.gz -C /opt/
-unzip gfadmin:gfadmin /home/gfadmin/pivotal-gemfire-9.0.1.zip -d /opt/
+unzip /home/gfadmin/pivotal-gemfire-9.0.1.zip -d /opt/
 
 echo 'export PATH=/opt/jdk1.8.0_72/bin/:${PATH}' >> /home/gfadmin/.bashrc
 echo 'export PATH=/opt/pivotal-gemfire-9.0.1/bin/:${PATH}' >> /home/gfadmin/.bashrc
