@@ -78,6 +78,7 @@ if [[ "${HOSTNAME}" == *"mdw"* ]] ; then
 
 else
     # Run the prep-segment.sh
+    echo "noop";
 fi
     
 
